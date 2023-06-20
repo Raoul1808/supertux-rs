@@ -1,3 +1,5 @@
+use supertux_rs::run;
+
 fn main() {
-    println!("Hello, world!");
+    run();
 }
