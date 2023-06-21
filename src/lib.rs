@@ -1,4 +1,3 @@
-use image::GenericImageView;
 use wgpu::util::DeviceExt;
 use winit::event::{ElementState, Event, KeyboardInput, VirtualKeyCode, WindowEvent};
 use winit::event_loop::{ControlFlow, EventLoop};
@@ -152,7 +151,7 @@ impl State {
             texture_size,
         );
 
-        let diffuse_texture_view = diffuse_texture.create_view((&wgpu::TextureViewDescriptor::default()));
+        let diffuse_texture_view = diffuse_texture.create_view(&wgpu::TextureViewDescriptor::default());
         let diffuse_sampler = device.create_sampler(&wgpu::SamplerDescriptor {
             address_mode_u: wgpu::AddressMode::ClampToEdge,
             address_mode_v: wgpu::AddressMode::ClampToEdge,
