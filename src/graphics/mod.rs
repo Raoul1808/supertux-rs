@@ -1,5 +1,6 @@
 pub mod render;
 pub mod texture;
+pub mod camera;
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, bytemuck::Pod, bytemuck::Zeroable)]
