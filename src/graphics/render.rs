@@ -1,6 +1,7 @@
 use wgpu::util::DeviceExt;
 use winit::dpi::PhysicalSize;
 use winit::window::Window;
+use crate::assets;
 use crate::graphics::{texture, Vertex};
 
 const VERTICES: &[Vertex] = &[
@@ -20,7 +21,6 @@ pub struct Render {
     device: wgpu::Device,
     queue: wgpu::Queue,
     config: wgpu::SurfaceConfiguration,
-    size: PhysicalSize<u32>,
     clear_color: wgpu::Color,
     render_pipeline: wgpu::RenderPipeline,
     vertex_buffer: wgpu::Buffer,
@@ -141,7 +141,8 @@ impl Render {
             multiview: None,
         });
 
-        let diffuse_texture = texture::Texture::from_bytes(&device, &queue, include_bytes!("../blobderpy.png"), "blobderpy");
+        let blob_bytes = assets::get_asset_bytes("blobderpy.png").await;
+        let diffuse_texture = texture::Texture::from_bytes(&device, &queue, blob_bytes.as_slice(), "blobderpy");
 
         let diffuse_bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
             layout: &texture_bind_group_layout,
@@ -175,7 +176,6 @@ impl Render {
             device,
             queue,
             config,
-            size,
             clear_color: wgpu::Color {r: 0.39216, g: 0.58431, b: 0.92941, a: 1.0},
             render_pipeline,
             diffuse_texture,
