@@ -9,14 +9,14 @@ use winit::window::{Window, WindowBuilder};
 struct State {
     size: PhysicalSize<u32>,
     window: Window,
-    renderer: graphics::render::Render,
+    renderer: graphics::render::RenderContext,
 }
 
 impl State {
     async fn new(window: Window) -> Self {
         let size = window.inner_size();
 
-        let renderer = graphics::render::Render::new(&window, size)
+        let renderer = graphics::render::RenderContext::new(&window, size)
             .await;
 
         Self {

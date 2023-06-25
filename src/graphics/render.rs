@@ -36,7 +36,7 @@ impl CameraUniform {
     }
 }
 
-pub struct Render {
+pub struct RenderContext {
     surface: wgpu::Surface,
     device: wgpu::Device,
     queue: wgpu::Queue,
@@ -53,7 +53,7 @@ pub struct Render {
     camera_bind_group: wgpu::BindGroup,
 }
 
-impl Render {
+impl RenderContext {
     pub async fn new(window: &Window, size: PhysicalSize<u32>) -> Self {
         let instance = wgpu::Instance::new(wgpu::InstanceDescriptor {
             backends: wgpu::Backends::all(),
