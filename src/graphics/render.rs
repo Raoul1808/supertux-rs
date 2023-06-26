@@ -2,7 +2,7 @@ use wgpu::util::DeviceExt;
 use winit::dpi::PhysicalSize;
 use winit::window::Window;
 use crate::assets;
-use crate::graphics::{camera, texture, Vertex};
+use crate::graphics::{texture, Vertex};
 use crate::graphics::camera::Camera;
 
 #[repr(C)]
