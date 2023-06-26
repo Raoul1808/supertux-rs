@@ -70,8 +70,8 @@ impl State {
 
     fn render(&mut self) -> Result<(), wgpu::SurfaceError> {
         let vertices = self.sprite.get_vertex_data();
-        println!("{:?}", vertices);
-        self.renderer.fill_buffers(&vertices, &vec![0, 1, 2, 2, 3, 0]);
+        let indices = vec![0, 1, 2, 2, 3, 0];
+        self.renderer.fill_buffers(&vertices, &indices);
         self.renderer.render()
     }
 }
