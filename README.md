@@ -8,6 +8,19 @@ This project is designed to run on both desktop platforms and the web using WebA
 
 #### Expect a low, beginner-like code quality, as this is my very first big project made in Rust.
 
+## Current state and roadmap
+
+The engine for the game is currently under development. Here is a roadmap of what's done and what's left to do:
+- [x] Window creation
+- [x] Creation of a rendering context
+- [x] Rendering sprites
+- [x] Camera
+- [ ] Optimized sprite rendering
+- [ ] Audio playback
+- [ ] Input management
+
+Once the engine grows large enough, I might split it into its own separate crate for personal use in many other projects.
+
 ## Building
 
 Pre-requisites:
