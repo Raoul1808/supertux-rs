@@ -50,13 +50,6 @@ impl State {
             WindowEvent::CursorMoved { position, .. } => {
                 self.mouse_x = position.x;
                 self.mouse_y = position.y;
-                let clear_color = wgpu::Color {
-                    r: position.x / self.size.width as f64,
-                    g: position.y / self.size.height as f64,
-                    b: 0.0,
-                    a: 1.0,
-                };
-                self.renderer.set_clear_color(clear_color);
                 true
             }
             _ => false
@@ -99,9 +92,6 @@ pub async fn run() {
 
     #[cfg(target_arch = "wasm32")]
     {
-        use winit::dpi::PhysicalSize;
-        window.set_inner_size(PhysicalSize::new(450, 400));
-
         use winit::platform::web::WindowExtWebSys;
         web_sys::window()
             .and_then(|win| win.document())
