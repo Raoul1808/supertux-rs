@@ -10,6 +10,9 @@ struct State {
     size: PhysicalSize<u32>,
     window: Window,
     renderer: graphics::render::RenderContext,
+    mouse_x: f64,
+    mouse_y: f64,
+    sprite: Sprite,
 }
 
 impl State {
@@ -19,10 +22,15 @@ impl State {
         let renderer = graphics::render::RenderContext::new(&window, size)
             .await;
 
+        let sprite = Sprite::new_from_x_y(100.0, 100.0, 100.0, 100.0);
+
         Self {
             renderer,
             size,
             window,
+            mouse_x: 0.0,
+            mouse_y: 0.0,
+            sprite,
         }
     }
 
@@ -40,6 +48,8 @@ impl State {
     fn input(&mut self, event: &WindowEvent) -> bool {
         match event {
             WindowEvent::CursorMoved { position, .. } => {
+                self.mouse_x = position.x;
+                self.mouse_y = position.y;
                 let clear_color = wgpu::Color {
                     r: position.x / self.size.width as f64,
                     g: position.y / self.size.height as f64,
@@ -54,16 +64,24 @@ impl State {
     }
 
     fn update(&mut self) {
-        // todo!("Implement update")
+        self.sprite.set_position(
+            self.mouse_x as f32,
+            self.mouse_y as f32,
+        );
     }
 
     fn render(&mut self) -> Result<(), wgpu::SurfaceError> {
+        let vertices = self.sprite.get_vertex_data();
+        println!("{:?}", vertices);
+        self.renderer.fill_buffers(&vertices, &vec![0, 1, 2, 2, 3, 0]);
         self.renderer.render()
     }
 }
 
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
+use crate::graphics::sprite::Sprite;
+use crate::graphics::Vertex;
 
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen(start))]
 pub async fn run() {

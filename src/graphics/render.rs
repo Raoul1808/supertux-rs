@@ -5,18 +5,6 @@ use crate::assets;
 use crate::graphics::{camera, texture, Vertex};
 use crate::graphics::camera::Camera;
 
-const VERTICES: &[Vertex] = &[
-    Vertex { position: [100.0, 100.0, 0.0], color: [1.0, 1.0, 1.0], tex_coords: [0.0, 0.0] },
-    Vertex { position: [100.0, 200.0, 0.0], color: [1.0, 1.0, 1.0], tex_coords: [0.0, 1.0] },
-    Vertex { position: [200.0, 200.0, 0.0], color: [1.0, 1.0, 1.0], tex_coords: [1.0, 1.0] },
-    Vertex { position: [200.0, 100.0, 0.0], color: [1.0, 1.0, 1.0], tex_coords: [1.0, 0.0] },
-];
-
-const INDICES: &[u16] = &[
-    0, 1, 2,
-    2, 3, 0,
-];
-
 #[repr(C)]
 #[derive(Debug, Copy, Clone, bytemuck::Pod, bytemuck::Zeroable)]
 struct CameraUniform {
@@ -36,6 +24,9 @@ impl CameraUniform {
     }
 }
 
+const VERTEX_MEM_SIZE: usize = std::mem::size_of::<Vertex>();
+const INDEX_MEM_SIZE: usize = std::mem::size_of::<u16>();
+
 pub struct RenderContext {
     surface: wgpu::Surface,
     device: wgpu::Device,
@@ -51,6 +42,9 @@ pub struct RenderContext {
     camera_uniform: CameraUniform,
     camera_buffer: wgpu::Buffer,
     camera_bind_group: wgpu::BindGroup,
+    num_indices: u32,
+    vertex_offset: usize,
+    index_offset: usize,
 }
 
 impl RenderContext {
@@ -221,16 +215,18 @@ impl RenderContext {
             label: Some("diffuse_bind_group",)
         });
 
-        let vertex_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+        let vertex_buffer = device.create_buffer(&wgpu::BufferDescriptor {
             label: Some("Vertex Buffer"),
-            contents: bytemuck::cast_slice(VERTICES),
-            usage: wgpu::BufferUsages::VERTEX,
+            size: (4 * 1024 * std::mem::size_of::<Vertex>()) as wgpu::BufferAddress,
+            usage: wgpu::BufferUsages::VERTEX | wgpu::BufferUsages::COPY_DST,
+            mapped_at_creation: false,
         });
 
-        let index_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+        let index_buffer = device.create_buffer(&wgpu::BufferDescriptor {
             label: Some("Index Buffer"),
-            contents: bytemuck::cast_slice(INDICES),
-            usage: wgpu::BufferUsages::INDEX,
+            size: (6 * 1024) as wgpu::BufferAddress,
+            usage: wgpu::BufferUsages::INDEX | wgpu::BufferUsages::COPY_DST,
+            mapped_at_creation: false,
         });
 
         Self {
@@ -248,12 +244,13 @@ impl RenderContext {
             camera_uniform,
             camera_buffer,
             camera_bind_group,
+            num_indices: 0,
+            vertex_offset: 0,
+            index_offset: 0,
         }
     }
 
     pub fn render(&mut self) -> Result<(), wgpu::SurfaceError> {
-        const NUM_INDICES: u32 = INDICES.len() as u32;
-
         let output = self.surface.get_current_texture()?;
 
         let view = output.texture.create_view(&wgpu::TextureViewDescriptor::default());
@@ -282,11 +279,15 @@ impl RenderContext {
             render_pass.set_bind_group(1, &self.camera_bind_group, &[]);
             render_pass.set_vertex_buffer(0, self.vertex_buffer.slice(..));
             render_pass.set_index_buffer(self.index_buffer.slice(..), wgpu::IndexFormat::Uint16);
-            render_pass.draw_indexed(0..NUM_INDICES, 0, 0..1);
+            render_pass.draw_indexed(0..self.num_indices, 0, 0..1);
         }
 
         self.queue.submit(std::iter::once(encoder.finish()));
         output.present();
+
+        self.vertex_offset = 0;
+        self.index_offset = 0;
+        self.num_indices = 0;
 
         Ok(())
     }
@@ -299,5 +300,13 @@ impl RenderContext {
         self.config.width = new_size.width;
         self.config.height = new_size.height;
         self.surface.configure(&self.device, &self.config);
+    }
+
+    pub fn fill_buffers(&mut self, vertices: &Vec<Vertex>, indices: &Vec<u16>) {
+        self.queue.write_buffer(&self.vertex_buffer, self.vertex_offset as wgpu::BufferAddress, bytemuck::cast_slice(vertices.as_slice()));
+        self.queue.write_buffer(&self.index_buffer, self.index_offset as wgpu::BufferAddress, bytemuck::cast_slice(indices.as_slice()));
+        self.num_indices += indices.len() as u32;
+        self.vertex_offset += vertices.len() * VERTEX_MEM_SIZE;
+        self.index_offset += indices.len() * INDEX_MEM_SIZE;
     }
 }
