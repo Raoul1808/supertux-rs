@@ -32,7 +32,7 @@ impl Camera {
             (0.0, 0.0, 0.0).into(),
             cgmath::Vector3::unit_y()
         );
-        let proj = cgmath::ortho(self.x, self.width, self.height, self.y, 0.1, 100.0);
+        let proj = cgmath::ortho(self.x, self.width, self.height, self.y, 0.0, 1.0);
         return OPENGL_TO_WGPU_MATRIX * proj * view;
     }
 }

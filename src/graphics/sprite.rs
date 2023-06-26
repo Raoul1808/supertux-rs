@@ -5,6 +5,7 @@ pub struct Sprite {
     // todo!("Add texture here")
     position: Vector2<f32>,
     size: Vector2<f32>,
+    layer_depth: f32,
 }
 
 impl Sprite {
@@ -12,6 +13,7 @@ impl Sprite {
         Self {
             position,
             size,
+            layer_depth: 0.0,
         }
     }
 
@@ -24,25 +26,31 @@ impl Sprite {
         self.position.y = y;
     }
 
+    pub fn set_layer_depth(&mut self, layer_depth: f32) {
+        if 0.0 <= layer_depth && layer_depth <= 1.0 {
+            self.layer_depth = layer_depth;
+        }
+    }
+
     pub fn get_vertex_data(&self) -> Vec<Vertex> {
         let mut vec = Vec::<Vertex>::new();
         vec.push(Vertex {
-            position: [self.position.x, self.position.y, 0.0],
+            position: [self.position.x, self.position.y, self.layer_depth],
             color: [1.0, 1.0, 1.0],
             tex_coords: [0.0, 0.0],
         });
         vec.push(Vertex {
-            position: [self.position.x, self.position.y + self.size.y, 0.0],
+            position: [self.position.x, self.position.y + self.size.y, self.layer_depth],
             color: [1.0, 1.0, 1.0],
             tex_coords: [0.0, 1.0],
         });
         vec.push(Vertex {
-            position: [self.position.x + self.size.x, self.position.y + self.size.y, 0.0],
+            position: [self.position.x + self.size.x, self.position.y + self.size.y, self.layer_depth],
             color: [1.0, 1.0, 1.0],
             tex_coords: [1.0, 1.0],
         });
         vec.push(Vertex {
-            position: [self.position.x + self.size.x, self.position.y, 0.0],
+            position: [self.position.x + self.size.x, self.position.y, self.layer_depth],
             color: [1.0, 1.0, 1.0],
             tex_coords: [1.0, 0.0],
         });
