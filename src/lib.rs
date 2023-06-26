@@ -6,6 +6,11 @@ use winit::event::{ElementState, Event, KeyboardInput, VirtualKeyCode, WindowEve
 use winit::event_loop::{ControlFlow, EventLoop};
 use winit::window::{Window, WindowBuilder};
 
+use crate::graphics::sprite::Sprite;
+
+#[cfg(target_arch = "wasm32")]
+use wasm_bindgen::prelude::*;
+
 struct State {
     size: PhysicalSize<u32>,
     window: Window,
@@ -70,11 +75,6 @@ impl State {
         self.renderer.render()
     }
 }
-
-#[cfg(target_arch = "wasm32")]
-use wasm_bindgen::prelude::*;
-use crate::graphics::sprite::Sprite;
-use crate::graphics::Vertex;
 
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen(start))]
 pub async fn run() {
