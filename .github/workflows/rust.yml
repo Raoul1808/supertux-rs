@@ -35,7 +35,7 @@ jobs:
       - name: Compress artifacts
         run: |
           cd target\${{ matrix.arch }}-pc-windows-msvc\release
-          tar -acvf macos-${{ matrix.arch }}.zip supertux-rs libsupertux_rs.dylib res
+          tar -acvf win-${{ matrix.arch }}.zip supertux-rs.exe supertux_rs.dll res
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
