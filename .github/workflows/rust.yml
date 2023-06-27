@@ -45,7 +45,7 @@ jobs:
   linux-build:
     strategy:
       matrix:
-        arch: [i686, x86_64, aarch64]
+        arch: [i686, x86_64]  # TODO: re-add aarch64 later?
 
     name: Build for Linux
     runs-on: ubuntu-latest
