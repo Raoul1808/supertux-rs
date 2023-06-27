@@ -40,7 +40,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          path: ${{ github.workspace }}/target/${{ matrix.arch }}/release/win-${{ matrix.arch }}.zip
+          path: ${{ github.workspace }}/target/${{ matrix.arch }}-pc-windows-msvc/release/win-${{ matrix.arch }}.zip
 
   linux-build:
     strategy:
@@ -83,7 +83,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          path: ${{ github.workspace }}/target/${{ matrix.arch }}/release/linux-${{ matrix.arch }}.tar.gz
+          path: ${{ github.workspace }}/target/${{ matrix.arch }}-unknown-linux-gnu/release/linux-${{ matrix.arch }}.tar.gz
 
   mac-build:
     strategy:
@@ -120,4 +120,4 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          path: ${{ github.workspace }}/target/${{ matrix.arch }}/release/macos-${{ matrix.arch }}.zip
+          path: ${{ github.workspace }}/target/${{ matrix.arch }}-apple-darwin/release/macos-${{ matrix.arch }}.zip
