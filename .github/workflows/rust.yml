@@ -67,11 +67,11 @@ jobs:
 
       - name: Copy assets
         run: |
-          cp -R res/ target/release/${{ matrix.arch }}-unknown-linux-gnu/res/
+          cp -R res/ target/${{ matrix.arch }}-unknown-linux-gnu/release/res/
 
       - name: Compress artifacts
         run: |
-          cd target/release/${{ matrix.arch }}-unknown-linux-gnu
+          cd target/${{ matrix.arch }}-unknown-linux-gnu/release
           tar -czf linux-${{ matrix.arch }}.tar.gz supertux-rs libsupertux_rs.so res
 
       - name: Upload artifacts
@@ -104,11 +104,11 @@ jobs:
 
       - name: Copy assets
         run: |
-          cp -R res/ target/release/${{ matrix.arch }}-apple-darwin/res/
+          cp -R res/ target/${{ matrix.arch }}-apple-darwin/release/res/
 
       - name: Compress artifacts
         run: |
-          cd target/release/${{ matrix.arch }}-apple-darwin
+          cd target/${{ matrix.arch }}-apple-darwin/release
           tar -acvf macos-${{ matrix.arch }}.zip supertux-rs libsupertux_rs.so res
 
       - name: Upload artifacts
