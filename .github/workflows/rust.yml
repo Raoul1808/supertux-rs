@@ -35,7 +35,7 @@ jobs:
       - name: Compress artifacts
         run: |
           cd target\release\${{ matrix.arch }}-pc-windows-msvc
-          tar -acvf win-${{ matrix.arch }}.zip supertux-rs.exe supertux_rs.dll res
+          Get-ChildItem -Path supertux-rs.exe, supertux_rs.dll, res | Compress-Archive -DestinationPath win-${{ matrix.arch }}.zip
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
