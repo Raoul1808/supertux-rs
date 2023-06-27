@@ -1,0 +1,117 @@
+name: Compile for desktop platforms
+on:
+  push:
+    branches:
+      - 'master'
+
+jobs:
+  win-build:
+    strategy:
+      matrix:
+        arch: [i686, x86_64, aarch64]
+
+    name: Build for Windows
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: ${{ matrix.arch }}-pc-windows-msvc
+
+      - name: Build project
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release --target ${{ matrix.arch }}-pc-windows-msvc
+
+      - name: Copy assets
+        run: |
+          xcopy res\ target\release\${{ matrix.arch }}-pc-windows-msvc\res\
+
+      - name: Compress artifacts
+        run: |
+          cd target\release\${{ matrix.arch }}-pc-windows-msvc
+          tar -acvf win-${{ matrix.arch }}.zip supertux-rs.exe supertux_rs.dll res
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          path: win-${{ matrix.arch }}.zip
+
+  linux-build:
+    strategy:
+      matrix:
+        arch: [i686, x86_64, aarch64]
+
+    name: Build for Linux
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: ${{ matrix.arch }}-unknown-linux-gnu
+
+      - name: Build project
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release --target ${{ matrix.arch }}-unknown-linux-gnu
+
+      - name: Copy assets
+        run: |
+          cp -R res/ target/release/${{ matrix.arch }}-unknown-linux-gnu/res/
+
+      - name: Compress artifacts
+        run: |
+          cd target/release/${{ matrix.arch }}-unknown-linux-gnu
+          tar -czf linux-${{ matrix.arch }}.tar.gz supertux-rs libsupertux_rs.so res
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          path: linux-${{ matrix.arch }}.tar.gz
+
+  mac-build:
+    strategy:
+      matrix:
+        arch: [x86_64, aarch64]
+
+    name: Build for macOS
+    runs-on: macos-11
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: ${{ matrix.arch }}-apple-darwin
+
+      - name: Build project
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release --target ${{ matrix.arch }}-apple-darwin
+
+      - name: Copy assets
+        run: |
+          cp -R res/ target/release/${{ matrix.arch }}-apple-darwin/res/
+
+      - name: Compress artifacts
+        run: |
+          cd target/release/${{ matrix.arch }}-apple-darwin
+          tar -acvf macos-${{ matrix.arch }}.zip supertux-rs libsupertux_rs.so res
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          path: macos-${{ matrix.arch }}.zip
